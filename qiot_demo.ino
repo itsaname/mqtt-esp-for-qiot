@@ -11,6 +11,11 @@
 #define CLIENT_ID "your client_id here"
 #define server "yourname.myqnapcloud.com"
 #define port 21883
+#define topic_SSID "your topic here"
+#define topic_RSSI "your topic here"
+#define topic_ADC "your topic here"
+#define topic_Hello "your topic here"
+
 #define event_lap 1000 //upload every 1000ms
 char ssid[] = "your ssid";
 char pass[] = "your wifi pass";
@@ -84,10 +89,10 @@ if(millis()-current_time>event_lap){
       reconnect();
   }
     else{
-      upload.publish("your topic 1",data_SSID); //change topict to fit your server
-      upload.publish("your topic 2",data_RSSI);
-      upload.publish("your topic 3",data_ADC);
-      upload.publish("your topic 4",data_Hello);
+      upload.publish(topic_SSID,data_SSID); //change topict to fit your server
+      upload.publish(topic_RSSI,data_RSSI);
+      upload.publish(topic_ADC,data_ADC);
+      upload.publish(topic_Hello,data_Hello);
       delay(100);
     }
 
