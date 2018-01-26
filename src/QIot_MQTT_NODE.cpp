@@ -39,86 +39,86 @@ uint32_t current_time;
 
 void callback(char* topic, byte* payload, unsigned int length) {
 
-								Serial.print("Message arrived [");
+  Serial.print("Message arrived [");
 
-								Serial.print(topic);
+  Serial.print(topic);
 
-								Serial.print("] ");
+  Serial.print("] ");
 
-								for (int i = 0; i < length; i++) {
+  for (int i = 0; i < length; i++) {
 
-																Serial.print((char)payload[i]);
+    Serial.print((char)payload[i]);
 
-								}
+  }
 
-								Serial.println();
+  Serial.println();
 
 
 }
 
 void reconnect() {
-								// Loop until we're reconnected
-								while (!MQTT_NODE.connected()) {
-																Serial.print("Attempting MQTT connection...");
-																// Attempt to connect
-																if (MQTT_NODE.connect(CLIENT_ID, USER_NAME, USER_PASS )) {
-																								MQTT_NODE.subscribe(topic_subscribe);
-																								Serial.println("connected");
-																}
-																else {
-																								Serial.print("failed, rc=");
-																								Serial.print(MQTT_NODE.state());
-																								Serial.println(" try again in 5 seconds");
-																								// Wait 5 seconds before retrying
-																								delay(5000);
-																}
-								}
+  // Loop until we're reconnected
+  while (!MQTT_NODE.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    // Attempt to connect
+    if (MQTT_NODE.connect(CLIENT_ID, USER_NAME, USER_PASS )) {
+      MQTT_NODE.subscribe(topic_subscribe);
+      Serial.println("connected");
+    }
+    else {
+      Serial.print("failed, rc=");
+      Serial.print(MQTT_NODE.state());
+      Serial.println(" try again in 5 seconds");
+      // Wait 5 seconds before retrying
+      delay(5000);
+    }
+  }
 }
 
 
 void setup()
 {
-								Serial.begin(115200);
-								while (!Serial) {
-																; // wait for serial port to connect. Needed for native USB port only
-								}
-								// attempt to connect to Wifi network:
-								while (status != WL_CONNECTED) {
-																Serial.print("Attempting to connect to SSID: ");
-																Serial.println(ssid);
-																// Connect to WPA/WPA2 network. Change this line if using open or WEP network:
-																status = WiFi.begin(ssid, pass);
-																delay(15000);
-								}
-								Serial.println("Connected to wifi");
-								MQTT_NODE.setServer(server, port);
-								MQTT_NODE.setCallback(callback);
-								delay(1500);
+  Serial.begin(115200);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB port only
+  }
+  // attempt to connect to Wifi network:
+  while (status != WL_CONNECTED) {
+    Serial.print("Attempting to connect to SSID: ");
+    Serial.println(ssid);
+    // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
+    status = WiFi.begin(ssid, pass);
+    delay(15000);
+  }
+  Serial.println("Connected to wifi");
+  MQTT_NODE.setServer(server, port);
+  MQTT_NODE.setCallback(callback);
+  delay(1500);
 }
 
 void loop(){
-								if(millis()-current_time>event_lap) {
-																current_time = millis();
-																DynamicJsonBuffer jsonBuffer;
-																JsonObject& Hello = jsonBuffer.createObject();
-																JsonObject& value = Hello.createNestedObject("value");
-																value["SSID"] = WiFi.SSID();
-																value["RSSI"] = WiFi.RSSI();
-																value["ADC"] = analogRead(A0);
+  if(millis()-current_time>event_lap) {
+    current_time = millis();
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject& Hello = jsonBuffer.createObject();
+    JsonObject& value = Hello.createNestedObject("value");
+    value["SSID"] = WiFi.SSID();
+    value["RSSI"] = WiFi.RSSI();
+    value["ADC"] = analogRead(A0);
 
-																if (!MQTT_NODE.connected()) {
-																								reconnect();
-																}
-																else{
-																								char payload[80];
-																								Hello.printTo(payload);
-																								MQTT_NODE.publish(topic_upload,payload);
-																								delay(100);
-																}
+    if (!MQTT_NODE.connected()) {
+      reconnect();
+    }
+    else{
+      char payload[80];
+      Hello.printTo(payload);
+      MQTT_NODE.publish(topic_upload,payload);
+      delay(100);
+    }
 
-								}
-								MQTT_NODE.loop();
-								delay(10);
+  }
+  MQTT_NODE.loop();
+  delay(10);
 
 
 }
