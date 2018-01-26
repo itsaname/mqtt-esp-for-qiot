@@ -2,3 +2,5 @@
 .piolibdeps
 .clang_complete
 .gcc-flags.json
+lib/ArduinoJson-master/test/JsonVariant/CMakeLists.txt
+lib/ArduinoJson-master/src/ArduinoJson/JsonVariantComparisons.hpp
